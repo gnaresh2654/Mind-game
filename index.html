@@ -3,9 +3,498 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mind Game</title>
+    <title>Stroop Effect Game - Color Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .game-area {
+            text-align: center;
+            margin: 40px 0;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-area.hidden {
+            display: none;
+        }
+
+        .instruction {
+            color: #666;
+            font-size: 1em;
+            margin-bottom: 20px;
+        }
+
+        .color-text {
+            font-size: 4em;
+            font-weight: bold;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            animation: pulse 0.3s ease-out;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .color-btn {
+            padding: 12px 20px;
+            font-size: 1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: white;
+        }
+
+        .color-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .color-btn:active {
+            transform: translateY(0);
+        }
+
+        .red-btn { background: #FF6B6B; }
+        .blue-btn { background: #4ECDC4; }
+        .green-btn { background: #45B7D1; }
+        .yellow-btn { background: #FFA502; }
+        .purple-btn { background: #9B59B6; }
+        .orange-btn { background: #E67E22; }
+
+        .start-screen {
+            text-align: center;
+        }
+
+        .start-screen.hidden {
+            display: none;
+        }
+
+        .start-btn, .restart-btn, .menu-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .start-btn:hover, .restart-btn:hover, .menu-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .difficulty-selector {
+            margin: 20px 0;
+        }
+
+        .difficulty-btn {
+            background: #f0f0f0;
+            border: 2px solid #ddd;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .difficulty-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .end-screen {
+            text-align: center;
+        }
+
+        .end-screen.hidden {
+            display: none;
+        }
+
+        .final-stats {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .final-stats h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .final-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+            color: #666;
+        }
+
+        .final-stat:last-child {
+            border-bottom: none;
+        }
+
+        .final-stat strong {
+            color: #333;
+        }
+
+        .accuracy {
+            font-size: 1.2em;
+            color: #667eea;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .timer {
+            font-size: 1.5em;
+            color: #764ba2;
+            margin-bottom: 20px;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            min-height: 30px;
+        }
+
+        .feedback.correct {
+            color: #27AE60;
+        }
+
+        .feedback.incorrect {
+            color: #E74C3C;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to Mind Game</h1>
+    <div class="container">
+        <div class="start-screen">
+            <div class="header">
+                <h1>🎨 Color Challenge</h1>
+                <p>Stroop Effect Game</p>
+            </div>
+            <p style="color: #666; margin-bottom: 20px; font-size: 1.05em;">
+                Identify the <strong>COLOR</strong> of the text, not the word itself!
+            </p>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 30px; color: #555; line-height: 1.6;">
+                <p><strong>How to Play:</strong></p>
+                <p>1. Look at the word displayed on screen</p>
+                <p>2. Click the button matching the TEXT COLOR (not the word)</p>
+                <p>3. Beat the timer and build your streak!</p>
+            </div>
+            <div class="difficulty-selector">
+                <p style="margin-bottom: 10px; color: #333; font-weight: bold;">Select Difficulty:</p>
+                <button class="difficulty-btn active" onclick="setDifficulty('easy')">Easy (15s)</button>
+                <button class="difficulty-btn" onclick="setDifficulty('medium')">Medium (10s)</button>
+                <button class="difficulty-btn" onclick="setDifficulty('hard')">Hard (5s)</button>
+            </div>
+            <button class="start-btn" onclick="startGame()">Start Game</button>
+        </div>
+
+        <div class="game-area hidden">
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-label">Score</div>
+                    <div class="stat-value" id="score">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Streak</div>
+                    <div class="stat-value" id="streak">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Accuracy</div>
+                    <div class="stat-value" id="accuracy">0%</div>
+                </div>
+            </div>
+
+            <div class="timer" id="timer">15</div>
+            <p class="instruction">Click the button matching the TEXT COLOR:</p>
+            <div class="color-text" id="colorText">BLUE</div>
+            <div class="buttons" id="buttonsContainer"></div>
+            <div class="feedback" id="feedback"></div>
+        </div>
+
+        <div class="end-screen hidden">
+            <div class="header">
+                <h1>🎉 Game Over!</h1>
+            </div>
+            <div class="final-stats">
+                <h3>Your Results</h3>
+                <div class="final-stat">
+                    <span>Final Score:</span>
+                    <strong id="finalScore">0</strong>
+                </div>
+                <div class="final-stat">
+                    <span>Best Streak:</span>
+                    <strong id="bestStreak">0</strong>
+                </div>
+                <div class="final-stat">
+                    <span>Total Attempts:</span>
+                    <strong id="totalAttempts">0</strong>
+                </div>
+                <div class="accuracy" id="finalAccuracy">Accuracy: 0%</div>
+            </div>
+            <button class="restart-btn" onclick="startGame()">Play Again</button>
+            <button class="menu-btn" onclick="goToMenu()">Main Menu</button>
+        </div>
+    </div>
+
+    <script>
+        const colors = ['Red', 'Blue', 'Green', 'Yellow', 'Purple', 'Orange'];
+        const colorMap = {
+            'Red': '#FF6B6B',
+            'Blue': '#4ECDC4',
+            'Green': '#45B7D1',
+            'Yellow': '#FFA502',
+            'Purple': '#9B59B6',
+            'Orange': '#E67E22'
+        };
+        const buttonClasses = {
+            'Red': 'red-btn',
+            'Blue': 'blue-btn',
+            'Green': 'green-btn',
+            'Yellow': 'yellow-btn',
+            'Purple': 'purple-btn',
+            'Orange': 'orange-btn'
+        };
+
+        let gameState = {
+            score: 0,
+            streak: 0,
+            correct: 0,
+            total: 0,
+            timeLeft: 15,
+            gameActive: false,
+            difficulty: 'easy',
+            timeLimits: { easy: 15, medium: 10, hard: 5 }
+        };
+
+        function setDifficulty(level) {
+            gameState.difficulty = level;
+            document.querySelectorAll('.difficulty-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function startGame() {
+            gameState = {
+                score: 0,
+                streak: 0,
+                correct: 0,
+                total: 0,
+                timeLeft: gameState.timeLimits[gameState.difficulty],
+                gameActive: true,
+                difficulty: gameState.difficulty,
+                timeLimits: gameState.timeLimits
+            };
+
+            document.querySelector('.start-screen').classList.add('hidden');
+            document.querySelector('.end-screen').classList.add('hidden');
+            document.querySelector('.game-area').classList.remove('hidden');
+
+            generateRound();
+            startTimer();
+        }
+
+        function generateRound() {
+            if (!gameState.gameActive) return;
+
+            const textColor = colors[Math.floor(Math.random() * colors.length)];
+            const displayWord = colors[Math.floor(Math.random() * colors.length)];
+
+            const textEl = document.getElementById('colorText');
+            textEl.textContent = displayWord;
+            textEl.style.color = colorMap[textColor];
+            textEl.dataset.correctColor = textColor;
+
+            generateButtons(textColor);
+            document.getElementById('feedback').textContent = '';
+        }
+
+        function generateButtons(correctColor) {
+            const container = document.getElementById('buttonsContainer');
+            container.innerHTML = '';
+
+            let buttonColors = [correctColor];
+            while (buttonColors.length < 4) {
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                if (!buttonColors.includes(color)) buttonColors.push(color);
+            }
+
+            buttonColors.sort(() => Math.random() - 0.5);
+
+            buttonColors.forEach(color => {
+                const btn = document.createElement('button');
+                btn.className = `color-btn ${buttonClasses[color]}`;
+                btn.textContent = color;
+                btn.onclick = () => checkAnswer(color, correctColor);
+                container.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected, correct) {
+            if (!gameState.gameActive) return;
+
+            gameState.total++;
+            const feedback = document.getElementById('feedback');
+
+            if (selected === correct) {
+                gameState.correct++;
+                gameState.score += 10;
+                gameState.streak++;
+                feedback.textContent = '✓ Correct!';
+                feedback.classList.remove('incorrect');
+                feedback.classList.add('correct');
+            } else {
+                gameState.streak = 0;
+                feedback.textContent = '✗ Wrong!';
+                feedback.classList.remove('correct');
+                feedback.classList.add('incorrect');
+            }
+
+            updateStats();
+            setTimeout(() => {
+                if (gameState.gameActive) generateRound();
+            }, 400);
+        }
+
+        function updateStats() {
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('streak').textContent = gameState.streak;
+            const accuracy = gameState.total > 0 ? Math.round((gameState.correct / gameState.total) * 100) : 0;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+        }
+
+        function startTimer() {
+            const timerEl = document.getElementById('timer');
+            const interval = setInterval(() => {
+                gameState.timeLeft--;
+                timerEl.textContent = gameState.timeLeft;
+
+                if (gameState.timeLeft <= 0) {
+                    clearInterval(interval);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function endGame() {
+            gameState.gameActive = false;
+            document.querySelector('.game-area').classList.add('hidden');
+            document.querySelector('.end-screen').classList.remove('hidden');
+
+            const accuracy = gameState.total > 0 ? Math.round((gameState.correct / gameState.total) * 100) : 0;
+            document.getElementById('finalScore').textContent = gameState.score;
+            document.getElementById('bestStreak').textContent = gameState.streak;
+            document.getElementById('totalAttempts').textContent = gameState.total;
+            document.getElementById('finalAccuracy').textContent = `Accuracy: ${accuracy}%`;
+        }
+
+        function goToMenu() {
+            document.querySelector('.start-screen').classList.remove('hidden');
+            document.querySelector('.end-screen').classList.add('hidden');
+            document.querySelector('.game-area').classList.add('hidden');
+        }
+    </script>
 </body>
 </html>
